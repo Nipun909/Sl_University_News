@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "lk.cmb.sl_university_news"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "lk.cmb.sl_university_news"
