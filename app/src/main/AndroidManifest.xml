@@ -13,28 +13,25 @@
         android:theme="@style/Theme.Sl_University_News"
         tools:targetApi="31">
 
-        <!--
-            The splash_screen activity is set as the main launcher.
-            When the app starts, this activity will be displayed first.
-        -->
+        <!-- Splash Screen Activity - This will be the first activity launched -->
         <activity
-            android:name=".splash_screen"
-            android:exported="true">
+            android:name=".SplashScreenActivity"
+            android:exported="true"
+            android:noHistory="true"> <!-- Optional: noHistory="true" prevents it from being added to the back stack -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!--
-            MainActivity is no longer the direct launcher.
-            It will be started by the splash_screen after the delay.
-            exported is set to false as it's not intended to be launched directly by other apps.
-        -->
+        <!-- Login Screen Activity - This will be launched by the splash screen -->
         <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+            android:name=".login_screen"
+            android:exported="false"> <!-- Usually false if not directly launchable by other apps -->
+            <!-- IMPORTANT: No MAIN and LAUNCHER intent-filter here! -->
+        </activity>
+
+        <!-- Add any other activities here as you create them -->
 
     </application>
-
 </manifest>
