@@ -13,25 +13,33 @@
         android:theme="@style/Theme.Sl_University_News"
         tools:targetApi="31">
 
-        <!-- Splash Screen Activity - This will be the first activity launched -->
+        <!-- Splash Screen Activity - This is the app's entry point -->
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
-            android:noHistory="true"> <!-- Optional: noHistory="true" prevents it from being added to the back stack -->
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Login Screen Activity - This will be launched by the splash screen -->
+        <!-- Login Screen Activity - Launched from the splash screen -->
         <activity
             android:name=".login_screen"
-            android:exported="false"> <!-- Usually false if not directly launchable by other apps -->
+            android:exported="false">
             <!-- IMPORTANT: No MAIN and LAUNCHER intent-filter here! -->
+        </activity>
+
+        <!-- Sign Up Screen Activity - Launched from the login screen -->
+        <activity
+            android:name=".SignUpScreenActivity"
+            android:exported="false">
+            <!-- This activity is launched by Intent and should not have MAIN or LAUNCHER filters -->
         </activity>
 
         <!-- Add any other activities here as you create them -->
 
     </application>
+
 </manifest>
