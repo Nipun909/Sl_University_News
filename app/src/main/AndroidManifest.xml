@@ -12,15 +12,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sl_University_News"
         tools:targetApi="31">
+
+        <!--
+            The splash_screen activity is set as the main launcher.
+            When the app starts, this activity will be displayed first.
+        -->
         <activity
-            android:name=".MainActivity"
+            android:name=".splash_screen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            MainActivity is no longer the direct launcher.
+            It will be started by the splash_screen after the delay.
+            exported is set to false as it's not intended to be launched directly by other apps.
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
