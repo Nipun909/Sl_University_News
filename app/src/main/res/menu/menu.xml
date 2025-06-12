@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navSport"
+        android:icon="@drawable/tennis_icon"
+        android:title="Sports"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navAcademic"
+        android:icon="@drawable/academic_icon"
+        android:title="Academic"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navFaculty"
+        android:icon="@drawable/faculty_icon"
+        android:title="Faculty"
+        app:showAsAction="ifRoom" />
+</menu>
