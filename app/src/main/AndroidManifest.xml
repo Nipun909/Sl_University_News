@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="lk.cmb.sl_university_news">
+
+    <!-- Grant network access for image loading -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +18,7 @@
         android:theme="@style/Theme.Sl_University_News"
         tools:targetApi="31">
 
-        <!-- Splash Screen Activity - This is the app's entry point -->
+        <!-- Entry point: Splash screen -->
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
@@ -24,21 +29,32 @@
             </intent-filter>
         </activity>
 
-        <!-- Login Screen Activity - Launched from the splash screen -->
+        <!-- Login screen -->
         <activity
             android:name=".login_screen"
-            android:exported="false">
-            <!-- IMPORTANT: No MAIN and LAUNCHER intent-filter here! -->
-        </activity>
+            android:exported="false" />
 
-        <!-- Sign Up Screen Activity - Launched from the login screen -->
+        <!-- Sign-up screen -->
         <activity
             android:name=".SignUpScreenActivity"
-            android:exported="false">
-            <!-- This activity is launched by Intent and should not have MAIN or LAUNCHER filters -->
-        </activity>
+            android:exported="false" />
 
-        <!-- Add any other activities here as you create them -->
+        <!-- News screen after login -->
+        <activity
+            android:name=".news_screen"
+            android:exported="false" />
+
+        <!-- Developer Info screen -->
+        <activity android:name=".DevInfoActivity" />
+
+        <!-- Detail view for tapped slider/card -->
+        <activity android:name=".NewsDetailActivity" />
+
+        <!-- Category list (Sports/Academic/Faculty) -->
+        <activity android:name=".CategoryNewsActivity" />
+
+        <activity android:name=".UserInfoActivity" />
+
 
     </application>
 

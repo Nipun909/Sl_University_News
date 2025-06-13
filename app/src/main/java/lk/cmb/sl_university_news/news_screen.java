@@ -2,85 +2,137 @@ package lk.cmb.sl_university_news;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.PopupMenu;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class news_screen extends AppCompatActivity {
 
-    MaterialCardView newsCard1, newsCard2, newsCard3, newsCard4;
-    BottomNavigationView bottomNavigationView;
-    ImageButton btnAccount;
-    Toolbar toolbar;
+    private ViewPager2 breakingNewsSlider;
+    private SliderAdapter sliderAdapter;
+
+    private RecyclerView newsRecyclerView;
+    private NewsCardAdapter newsCardAdapter;
+
+    private List<NewsItem> newsItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_screen);
 
-        // Initialize toolbar
-        toolbar = findViewById(R.id.toolbar3);
+        // ─── Toolbar Setup ─────────────────────
+        Toolbar toolbar = findViewById(R.id.toolbar3);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
-        // Initialize news cards
-        newsCard1 = findViewById(R.id.newsCard1);
-        newsCard2 = findViewById(R.id.newsCard2);
-        newsCard3 = findViewById(R.id.newsCard3);
-        newsCard4 = findViewById(R.id.newsCard4);
-
-        // Initialize toolbar buttons
-        btnAccount = findViewById(R.id.btnAccount);
-
-        // Handle menu button click (navigation icon)
-        toolbar.setNavigationOnClickListener(view -> {
-            Toast.makeText(this, "Menu clicked", Toast.LENGTH_SHORT).show();
-            // TODO: Open drawer or navigation menu
+        // Dev Info popup on menu icon
+        toolbar.setNavigationOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(news_screen.this, v);
+            popup.getMenuInflater().inflate(R.menu.toolbar_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_dev_info) {
+                    startActivity(new Intent(news_screen.this, DevInfoActivity.class));
+                    return true;
+                }
+                return false;
+            });
+            popup.show();
         });
 
-        // Handle news card clicks
-        View.OnClickListener newsClickListener = view -> {
-            Intent intent = new Intent(news_screen.this, FullNewsActivity.class);
-            intent.putExtra("news_id", view.getId());
-            startActivity(intent);
-        };
+        // ─── Account Button ─────────────────────
+        ImageButton btnAccount = findViewById(R.id.btnAccount);
+        btnAccount.setOnClickListener(v ->
+                startActivity(new Intent(news_screen.this, UserInfoActivity.class))
+        );
 
-        newsCard1.setOnClickListener(newsClickListener);
-        newsCard2.setOnClickListener(newsClickListener);
-        newsCard3.setOnClickListener(newsClickListener);
-        newsCard4.setOnClickListener(newsClickListener);
+        // ─── Breaking News Slider ────────────────
+        newsItems = new ArrayList<>();
+        breakingNewsSlider = findViewById(R.id.breakingNewsSlider);
+        sliderAdapter = new SliderAdapter(this, newsItems);
+        breakingNewsSlider.setAdapter(sliderAdapter);
 
-        // Handle account button click
-        btnAccount.setOnClickListener(view -> {
-            Toast.makeText(this, "Account clicked", Toast.LENGTH_SHORT).show();
-            // TODO: Open account/profile activity
-            // Intent accountIntent = new Intent(news_screen.this, AccountActivity.class);
-            // startActivity(accountIntent);
-        });
+        // ─── Recommended RecyclerView ────────────
+        newsRecyclerView = findViewById(R.id.newsRecyclerView);
+        newsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        newsCardAdapter = new NewsCardAdapter(this, newsItems);
+        newsRecyclerView.setAdapter(newsCardAdapter);
 
-        // Bottom Navigation setup
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.navSport) {
-                Intent intent = new Intent(news_screen.this, SportsActivity.class);
-                startActivity(intent);
-                return true;
-            } else if (itemId == R.id.navAcademic) {
-                Intent intent = new Intent(news_screen.this, AcademicActivity.class);
-                startActivity(intent);
-                return true;
-            } else if (itemId == R.id.navFaculty) {
-                Intent intent = new Intent(news_screen.this, FacultyActivity.class);
+        // ─── Bottom Navigation ───────────────────
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                int id = item.getItemId();
+                if (id == R.id.navSport) {
+                    intent = new Intent(news_screen.this, CategoryNewsActivity.class);
+                    intent.putExtra("category", "Sports");
+                } else if (id == R.id.navAcademic) {
+                    intent = new Intent(news_screen.this, CategoryNewsActivity.class);
+                    intent.putExtra("category", "Academic");
+                } else if (id == R.id.navFaculty) {
+                    intent = new Intent(news_screen.this, CategoryNewsActivity.class);
+                    intent.putExtra("category", "Faculty");
+                } else {
+                    return false;
+                }
                 startActivity(intent);
                 return true;
             }
+        });
 
-            return false;
+        // ─── Load News from Firebase ─────────────
+        loadNewsFromArray();
+    }
+
+    private void loadNewsFromArray() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("News");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                newsItems.clear();
+                for (DataSnapshot newsSnapshot : snapshot.getChildren()) {
+                    // Skip null entries (like index 0)
+                    if (newsSnapshot.getValue() == null) continue;
+
+                    String title = newsSnapshot.child("title").getValue(String.class);
+                    String imageUrl = newsSnapshot.child("imageUrl").getValue(String.class);
+                    String body = newsSnapshot.child("body").getValue(String.class);
+
+                    if (title != null && imageUrl != null && body != null) {
+                        newsItems.add(new NewsItem(title, imageUrl, body));
+                    }
+                }
+                sliderAdapter.notifyDataSetChanged();
+                newsCardAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("FIREBASE ERROR: " + error.getMessage());
+            }
         });
     }
 }
