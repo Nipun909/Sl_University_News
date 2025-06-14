@@ -32,7 +32,8 @@ public class news_screen extends AppCompatActivity {
     private RecyclerView newsRecyclerView;
     private NewsCardAdapter newsCardAdapter;
 
-    private List<NewsItem> newsItems;
+    private List<NewsItem> breakingNewsItems = new ArrayList<>();
+    private List<NewsItem> otherNewsItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class news_screen extends AppCompatActivity {
             popup.getMenuInflater().inflate(R.menu.toolbar_menu, popup.getMenu());
             popup.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.menu_dev_info) {
-                    startActivity(new Intent(news_screen.this, DevInfoActivity.class));
+                    startActivity(new Intent(news_screen.this, Dev_info.class));
                     return true;
                 }
                 return false;
@@ -67,15 +68,14 @@ public class news_screen extends AppCompatActivity {
         );
 
         // ─── Breaking News Slider ────────────────
-        newsItems = new ArrayList<>();
         breakingNewsSlider = findViewById(R.id.breakingNewsSlider);
-        sliderAdapter = new SliderAdapter(this, newsItems);
+        sliderAdapter = new SliderAdapter(this, breakingNewsItems);
         breakingNewsSlider.setAdapter(sliderAdapter);
 
         // ─── Recommended RecyclerView ────────────
         newsRecyclerView = findViewById(R.id.newsRecyclerView);
         newsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        newsCardAdapter = new NewsCardAdapter(this, newsItems);
+        newsCardAdapter = new NewsCardAdapter(this, otherNewsItems);
         newsRecyclerView.setAdapter(newsCardAdapter);
 
         // ─── Bottom Navigation ───────────────────
@@ -103,18 +103,19 @@ public class news_screen extends AppCompatActivity {
         });
 
         // ─── Load News from Firebase ─────────────
-        loadNewsFromArray();
+        loadNewsFromFirebase();
     }
 
-    private void loadNewsFromArray() {
+    private void loadNewsFromFirebase() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("News");
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                newsItems.clear();
+                breakingNewsItems.clear();
+                otherNewsItems.clear();
+
                 for (DataSnapshot newsSnapshot : snapshot.getChildren()) {
-                    // Skip null entries (like index 0)
                     if (newsSnapshot.getValue() == null) continue;
 
                     String title = newsSnapshot.child("title").getValue(String.class);
@@ -122,11 +123,23 @@ public class news_screen extends AppCompatActivity {
                     String body = newsSnapshot.child("body").getValue(String.class);
 
                     if (title != null && imageUrl != null && body != null) {
-                        newsItems.add(new NewsItem(title, imageUrl, body));
+                        NewsItem item = new NewsItem(title, imageUrl, body);
+
+                        if (title.equals("Breaking_News")) {
+                            breakingNewsItems.add(item);
+                        } else {
+                            otherNewsItems.add(item);
+                        }
                     }
                 }
-                sliderAdapter.notifyDataSetChanged();
-                newsCardAdapter.notifyDataSetChanged();
+
+                sliderAdapter = new SliderAdapter(news_screen.this, breakingNewsItems);
+                breakingNewsSlider.setAdapter(sliderAdapter);
+
+                newsCardAdapter = new NewsCardAdapter(news_screen.this, otherNewsItems);
+                newsRecyclerView.setAdapter(newsCardAdapter);
+
+                startAutoSlideBreakingNews();
             }
 
             @Override
@@ -134,5 +147,20 @@ public class news_screen extends AppCompatActivity {
                 System.out.println("FIREBASE ERROR: " + error.getMessage());
             }
         });
+    }
+
+    private void startAutoSlideBreakingNews() {
+        final int delayMillis = 4000; // 4 seconds
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (breakingNewsItems.size() == 0) return;
+                int current = breakingNewsSlider.getCurrentItem();
+                int next = (current + 1) % breakingNewsItems.size();
+                breakingNewsSlider.setCurrentItem(next, true);
+                breakingNewsSlider.postDelayed(this, delayMillis);
+            }
+        };
+        breakingNewsSlider.postDelayed(runnable, delayMillis);
     }
 }

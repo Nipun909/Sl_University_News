@@ -35,12 +35,9 @@ public class Dev_info extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dev_info);
+        setContentView(R.layout.activity_dev_info); // Make sure this is the correct layout
 
-        // Initialize views
         initViews();
-
-        // Set click listeners
         setClickListeners();
     }
 
@@ -54,24 +51,28 @@ public class Dev_info extends AppCompatActivity {
     }
 
     private void setClickListeners() {
-        // Profile image click listener
+        // Image click to update
         profileImage.setOnClickListener(v -> showImagePickerDialog());
 
-        // Exit button click listener
-        btnExit.setOnClickListener(v -> showExitConfirmationDialog());
+        // Exit → Navigate to News Screen
+        btnExit.setOnClickListener(v -> {
+            Intent intent = new Intent(Dev_info.this, news_screen.class);
+            startActivity(intent);
+            finish(); // Optional: close current screen
+        });
     }
 
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Profile Picture");
         builder.setItems(new CharSequence[]{"Camera", "Gallery"}, (dialog, which) -> {
-            if (which == 0) { // Camera
+            if (which == 0) {
                 if (checkCameraPermission()) {
                     openCamera();
                 } else {
                     requestCameraPermission();
                 }
-            } else { // Gallery
+            } else {
                 openGallery();
             }
         });
@@ -142,19 +143,5 @@ public class Dev_info extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void showExitConfirmationDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Exit Application")
-                .setMessage("Are you sure you want to exit?")
-                .setPositiveButton("Yes", (dialog, which) -> finish())
-                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-    @Override
-    public void onBackPressed() {
-        showExitConfirmationDialog();
     }
 }

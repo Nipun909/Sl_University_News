@@ -45,7 +45,8 @@
             android:exported="false" />
 
         <!-- Developer Info screen -->
-        <activity android:name=".DevInfoActivity" />
+        <activity android:name=".Dev_info" />
+
 
         <!-- Detail view for tapped slider/card -->
         <activity android:name=".NewsDetailActivity" />

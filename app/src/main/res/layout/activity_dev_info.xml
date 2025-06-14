@@ -42,6 +42,9 @@
             android:padding="24dp">
 
             <!-- Profile Image -->
+
+
+            <!-- ✅ Replaced default image with dev.jpg -->
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
                 android:layout_width="140dp"
@@ -50,11 +53,11 @@
                 android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:src="@android:drawable/ic_menu_camera"
+                android:src="@drawable/dev"
                 app:civ_border_color="@color/primary_dark"
                 app:civ_border_width="3dp" />
 
-            <!-- Name -->
+
             <TextView
                 android:id="@+id/tv_dev_name"
                 android:layout_width="wrap_content"
@@ -71,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="Student no: 2022101581"
+                android:text="Student no: 2022T01581"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"/>
@@ -84,7 +87,7 @@
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
                 android:lineSpacingExtra="4dp"
-                android:text="Personal Statement. Passionate about innovation, clean code, and building solutions that make life smarter and simpler."
+                android:text="Personal Statement- Passionate about innovation, clean code, and building solutions that make life smarter and simpler."
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp" />
 
@@ -114,6 +117,7 @@
                 android:textSize="18sp"
                 android:background="@drawable/teal_background"
                 app:cornerRadius="30dp" />
+
 
 
 

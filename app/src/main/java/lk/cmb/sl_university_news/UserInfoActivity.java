@@ -86,8 +86,9 @@ public class UserInfoActivity extends AppCompatActivity {
             currentName = inputName.getText().toString().trim();
             currentEmail = inputEmail.getText().toString().trim();
 
-            userNameLabel.setText(currentName);
-            emailLabel.setText(currentEmail);
+            userNameLabel.setText("User Name: " + currentName);
+            emailLabel.setText("Email: " + currentEmail);
+
 
             // Optional: Update Firebase Auth profile (only name can be updated here)
             /*
