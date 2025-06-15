@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="lk.cmb.sl_university_news">
+
+    <!-- Grant network access for image loading -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,15 +17,46 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sl_University_News"
         tools:targetApi="31">
+
+        <!-- Entry point: Splash screen -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".SplashScreenActivity"
+            android:exported="true"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Login screen -->
+        <activity
+            android:name=".login_screen"
+            android:exported="false" />
+
+        <!-- Sign-up screen -->
+        <activity
+            android:name=".SignUpScreenActivity"
+            android:exported="false" />
+
+        <!-- News screen after login -->
+        <activity
+            android:name=".news_screen"
+            android:exported="false" />
+
+        <!-- Developer Info screen -->
+        <activity android:name=".Dev_info" />
+
+
+        <!-- Detail view for tapped slider/card -->
+        <activity android:name=".NewsDetailActivity" />
+
+        <!-- Category list (Sports/Academic/Faculty) -->
+        <activity android:name=".CategoryNewsActivity" />
+
+        <activity android:name=".UserInfoActivity" />
+
+
     </application>
 
 </manifest>
